@@ -77,8 +77,12 @@ A API foi projetada para interagir de forma polimórfica com os produtos. O Prod
 
 ProdutoController
 Método	Endpoint	Descrição
+<br></br>
 POST	/api/produtos	Cria um novo produto (o tipo é inferido pelo JSON).
+<br></br>
 GET	/api/produtos	Retorna uma lista de todos os produtos.
+<br></br>
 GET	/api/produtos/{id}	Retorna um produto pelo seu ID.
+<br></br>
 PUT	/api/produtos/{id}	Atualiza um produto existente.
 DELETE	/api/produtos/{id}	Deleta um produto pelo ID.
