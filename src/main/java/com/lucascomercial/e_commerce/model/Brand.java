@@ -3,29 +3,40 @@ package com.lucascomercial.e_commerce.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lucascomercial.e_commerce.model.product.Product;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name  = "tb_marca")
+@Table(name  = "tb_brand")
 public class Brand {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String name;
-    private String nacionality;
-    @OneToMany
-    @JsonBackReference
+    private String nationality;
+    
+    
+    @OneToMany(mappedBy= "brand",cascade = CascadeType.ALL,orphanRemoval = true) 
+    @JsonManagedReference
     private List<Product> product;
 
-
+    public Brand(){
+        
+    }
     
-    public Brand(String name, String nacionality) {
+    public Brand(String name, String nationality) {
         this.name = name;
-        this.nacionality = nacionality;
+        this.nationality = nationality;
         this.product = new ArrayList<>();
     }
     public String getName() {
@@ -35,10 +46,10 @@ public class Brand {
         this.name = name;
     }
     public String getNacionality() {
-        return nacionality;
+        return nationality;
     }
     public void setNacionality(String nacionality) {
-        this.nacionality = nacionality;
+        this.nationality = nacionality;
     }
     public List<Product> getProduct() {
         return product;
@@ -57,6 +68,36 @@ public void removeProduto(Product p){
     p.setBrand(null);
 
 }
+
+public void removeProducts(List<Product> productsToRemove){
+
+    this.product.removeAll(productsToRemove);
+    productsToRemove.stream().forEach(x-> x.setBrand(null));
+
+
+}
+    
+
+
+
+public int getTotalProducts(){
+    return product.size();
+}
+
+
+
+public void clearProducts(){
+    this.product.clear();
+}
+public long getId() {
+    return id;
+}
+public void setId(long id) {
+    this.id = id;
+}
+
+
+
 
 
 }

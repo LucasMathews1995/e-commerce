@@ -1,7 +1,11 @@
 package com.lucascomercial.e_commerce.model.product;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.lucascomercial.e_commerce.exceptions.ProdutoEstoqueException;
+import com.lucascomercial.e_commerce.exceptions.NotEnoughStock;
 import com.lucascomercial.e_commerce.model.Brand;
 import com.lucascomercial.e_commerce.model.User;
 
@@ -12,10 +16,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "tb_product")
 public  abstract class Product {
 
 @Id
@@ -24,13 +31,11 @@ public  abstract class Product {
 
     private String name;
     private Double price;
-    private String description;
     private Integer stock;
     private double discount;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonBackReference
-    private User user;
+   @ManyToMany
+private List<User> users = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name= "marca_id")
     @JsonBackReference
@@ -39,10 +44,24 @@ public  abstract class Product {
 
 
 
-    public Product( Double price, Integer stock, double discount) {
+    public Product( String name ,Double price, Integer stock, double discount) {
+        this.name = name;
         this.price = price;
         this.stock = stock;
         this.discount = discount;
+        this.users = new ArrayList<>();
+       
+    }
+
+
+
+
+
+    public Product(String name, Double price, Integer stock) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.users = new ArrayList<>();
     }
 
 
@@ -104,18 +123,7 @@ public  abstract class Product {
 
 
 
-    public String getDescription() {
-        return description;
-    }
-
-
-
-
-
-    public void setDescription(String descricao) {
-        this.description = descricao;
-    }
-
+    
 
 
 
@@ -150,6 +158,20 @@ public  abstract class Product {
 
 
 
+public Brand getBrand() {
+    return brand;
+}
+
+
+
+
+
+public void setBrand(Brand brand) {
+    this.brand = brand;
+}
+
+    
+
 
 
     protected boolean verifyAvailability(){
@@ -158,7 +180,7 @@ public  abstract class Product {
 
 
 
-    public void sellProduct(int quantidade){
+    public void sellProduct(int quantidade,User user){
        double total =  quantidade*getPrice();
         if(verifyAvailability() && user.getMoney()>=total){
             
@@ -173,7 +195,7 @@ public  abstract class Product {
         }
         
         else {
-            throw new ProdutoEstoqueException("Produto não tem estoque para ser vendido");
+            throw new NotEnoughStock("Produto não tem estoque para ser vendido");
         }
     }
 
@@ -185,37 +207,48 @@ public  abstract class Product {
 
 
 
-    public User getUser() {
-        return user;
-    }
-
-
-
-
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
 protected Double discount(){
-    return getPrice()*getDiscount()/100;
+    return getPrice()*getDiscount();
 }
 
 
 
 
 
-public Brand getBrand() {
-    return brand;
+public void addQuantidade (int quantity){
+setStock(getStock()+quantity);
+}
+
+public void removeQuantidade(int quantity){
+    if(getStock()>quantity){
+        setStock(getStock()-quantity);}
+    
 }
 
 
 
 
 
-public void setBrand(Brand brand) {
-    this.brand = brand;
+public List<User> getUsers() {
+    return users;
 }
+
+
+
+
+
+public void setUsers(List<User> users) {
+    this.users = users;
+}
+
+public void addUsers(User user){
+    this.users.add(user);
+    user.getProduct().add(this);
+}
+
+
+
+
 
 
     

@@ -1,5 +1,6 @@
 package com.lucascomercial.e_commerce.model.product;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 
@@ -13,8 +14,8 @@ public class Livro extends Product {
     private int pages;
 
 
- public Livro(String author, String genre, int pages,double preco,Integer estoque,double desconto) {
-    super(preco,estoque,desconto);
+ public Livro(String name ,String author, String genre, int pages,double preco,Integer stock,double discount) {
+    super(name,preco,stock,discount);
         this.author = author;
         this.genre = genre;
         this.pages = pages;
@@ -48,6 +49,8 @@ public class Livro extends Product {
         this.pages = pages;
     }
 
+
+    
 
 
     

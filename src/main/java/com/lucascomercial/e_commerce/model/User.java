@@ -8,23 +8,37 @@ import com.lucascomercial.e_commerce.model.product.Product;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 @Entity
-@Table(name = "tb_user")
+@Table(name = "tb_user")    
 public class User {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private String nome;
     private String cidade;
     private String email;
     private boolean isVip;
-   @OneToMany(mappedBy= "produto",cascade = CascadeType.ALL,orphanRemoval = true) 
-    @JsonManagedReference
+  @ManyToMany
+   @JoinTable(
+    name = "tb_purchase",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "product_id")
+)
     private List<Product> product;
     private Double money;
     
+public User (){
 
+}
 
     public User(String nome, String cidade, String email, boolean isVip, Double money) {
         this.nome = nome;
@@ -69,16 +83,7 @@ public class User {
    }
 
 
-   public void addProduto(Product p){
-    this.product.add(p);
-    p.setUser(this);
-
-}
-public void removeProduto(Product p){
-    this.product.remove(p);
-    p.setUser(null);
-
-}
+  
 public boolean isVip() {
     return isVip;
 }
@@ -86,6 +91,14 @@ public void setVip(boolean isVip) {
     this.isVip = isVip;
 }
 
+
+public void addUser(Product p){
+    
+     this.product.add(p);
+
+    
+    p.getUsers().add(this);
+}
 
     
 
